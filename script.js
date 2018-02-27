@@ -5,17 +5,22 @@ const timerPlus = document.querySelector(".pomodoro__length__btn__adjust__timer-
 const breakMinus = document.querySelector(".pomodoro__length__btn__adjust__break-minus");
 const breakPlus = document.querySelector(".pomodoro__length__btn__adjust__break-plus");
 const startBtn = document.querySelector(".pomodoro__control__btn--start");
+const stopBtn = document.querySelector(".pomodoro__control__btn--stop");
+const resetBtn = document.querySelector(".pomodoro__control__btn--reset");
 let timerLength = document.querySelector(".pomodoro__length__btn__adjust__timer");
 let breakLength = document.querySelector(".pomodoro__length__btn__adjust__break");
+let timerName = document.querySelector(".pomodoro__timer__name");
 let timerTime = document.querySelector(".pomodoro__timer__time");
+let startBtnPushed;
+let timer;
 
 //Initial function
 function init() {
-    // let second = 1000;
-    // let minute = 1000 * 60;
     timerLength.innerText = "25:00";
     breakLength.innerText = "05:00";
     timerTime.innerText = "25:00";
+    timerName.innerText = "Timer";
+    startBtnPushed = false;
 }
 
 init();
@@ -32,11 +37,19 @@ timerMinus.addEventListener("click", function() {
         subtractedString = String(subtracted);
         if (subtractedString.length === 1) {
             timerLength.innerText = `0${subtractedString}:${splited[1]}`;
-            timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+            if (timerName.innerText === "Timer") {
+                timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+            }
         } else {
             timerLength.innerText = `${subtractedString}:${splited[1]}`;
-            timerTime.innerText = `${subtractedString}:${splited[1]}`;
+            if (timerName.innerText === "Timer") {
+                timerTime.innerText = `${subtractedString}:${splited[1]}`;
+            }
         }
+    }
+    if (timerName.innerText === "Timer") {
+        clearInterval(timer);
+        startBtnPushed = false;
     }
 })
 
@@ -50,10 +63,18 @@ timerPlus.addEventListener("click", function() {
     subtractedString = String(subtracted);
     if (subtractedString.length === 1) {
         timerLength.innerText = `0${subtractedString}:${splited[1]}`;
-        timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+        if (timerName.innerText === "Timer") {
+            timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+        }
     } else {
         timerLength.innerText = `${subtractedString}:${splited[1]}`;
-        timerTime.innerText = `${subtractedString}:${splited[1]}`;
+        if (timerName.innerText === "Timer") {
+            timerTime.innerText = `${subtractedString}:${splited[1]}`;
+        }
+    }
+    if (timerName.innerText === "Timer") {
+        clearInterval(timer);
+        startBtnPushed = false;
     }
 });
 
@@ -69,9 +90,19 @@ breakMinus.addEventListener("click", function() {
         subtractedString = String(subtracted);
         if (subtractedString.length === 1) {
             breakLength.innerText = `0${subtractedString}:${splited[1]}`;
+            if (timerName.innerText === "Break!") {
+                timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+            }
         } else {
             breakLength.innerText = `${subtractedString}:${splited[1]}`;
+            if (timerName.innerText === "Break!") {
+                timerTime.innerText = `${subtractedString}:${splited[1]}`;
+            }
         }
+    }
+    if (timerName.innerText === "Break!") {
+        clearInterval(timer);
+        startBtnPushed = false;
     }
 })
 
@@ -85,35 +116,76 @@ breakPlus.addEventListener("click", function() {
     subtractedString = String(subtracted);
     if (subtractedString.length === 1) {
         breakLength.innerText = `0${subtractedString}:${splited[1]}`;
+        if (timerName.innerText === "Break!") {
+            timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+        }
     } else {
         breakLength.innerText = `${subtractedString}:${splited[1]}`;
+        if (timerName.innerText === "Break!") {
+            timerTime.innerText = `${subtractedString}:${splited[1]}`;
+        }
+    }
+    if (timerName.innerText === "Break!") {
+        clearInterval(timer);
+        startBtnPushed = false;
     }
 });
 
 //Start button
 startBtn.addEventListener("click", function() {
-    setInterval(timer, 1000);
+    if (!startBtnPushed) {
+        startBtnPushed = true;
+        timer = setInterval(function() {
+            let time = timerTime.innerText;
+            let splited, first, second, firstString, secondString;
+            splited = time.split(":");
+            first = Number(splited[0]);
+            if (splited[1] === "00") {
+                --first;
+                splited[1] = "60";
+            }
+            second = Number(splited[1]);
+            --second;
+            firstString = String(first);
+            secondString = String(second);
+            if (firstString.length === 1) {
+                firstString = `0${firstString}`;
+            }
+            if (secondString.length === 1) {
+                secondString = `0${secondString}`;
+            } 
+            timerTime.innerText = `${firstString}:${secondString}`;
+            if (timerTime.innerText === "00:00" && timerName.innerText === "Timer") {
+                breakTime();
+            } 
+            if (timerTime.innerText === "00:00" && timerName.innerText === "Break!") {
+                timerName.innerText = "Timer";
+                timerTime.innerText = timerLength.innerText;
+            }
+        } , 1000);
+    }
 });
 
-function timer() {
-    let time = timerTime.innerText;
-    let splited, first, second, firstString, secondString;
-    splited = time.split(":");
-    first = Number(splited[0]);
-    if (splited[1] === "00") {
-        --first;
-        splited[1] = "60";
-    }
-    second = Number(splited[1]);
-    --second;
-    firstString = String(first);
-    secondString = String(second);
-    if (firstString.length === 1) {
-        firstString = `0${firstString}`;
-    }
-    if (secondString.length === 1) {
-        secondString = `0${secondString}`;
-    } 
-    timerTime.innerText = `${firstString}:${secondString}`;
+function breakTime() {
+    timerName.innerText = "Break!";
+    timerTime.innerText = breakLength.innerText;
 }
 
+//Stop button
+stopBtn.addEventListener("click", function() {
+    startBtnPushed = false;
+    clearInterval(timer);
+});
+
+//Reset button
+resetBtn.addEventListener("click", function() {
+    if (timerName.innerText === "Timer") {
+        timerTime.innerText = timerLength.innerText;
+        clearInterval(timer);
+        startBtnPushed = false;
+    } else if (timerName.innerText === "Break!") {
+        timerTime.innerText = breakLength.innerText;
+        clearInterval(timer);
+        startBtnPushed = false;
+    }
+});
