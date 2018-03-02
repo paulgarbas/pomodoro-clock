@@ -7,10 +7,13 @@ const breakPlus = document.querySelector(".pomodoro__length__btn__adjust__break-
 const startBtn = document.querySelector(".pomodoro__control__btn--start");
 const stopBtn = document.querySelector(".pomodoro__control__btn--stop");
 const resetBtn = document.querySelector(".pomodoro__control__btn--reset");
+const audio = document.querySelector("audio");
 let timerLength = document.querySelector(".pomodoro__length__btn__adjust__timer");
 let breakLength = document.querySelector(".pomodoro__length__btn__adjust__break");
 let timerName = document.querySelector(".pomodoro__timer__name");
 let timerTime = document.querySelector(".pomodoro__timer__time");
+let titleBar = document.querySelector("title");
+let timerBorder = document.querySelector(".pomodoro__timer");
 let startBtnPushed;
 let timer;
 
@@ -20,6 +23,8 @@ function init() {
     breakLength.innerText = "05:00";
     timerTime.innerText = "25:00";
     timerName.innerText = "Timer";
+    timerBorder.style.borderColor = "rgb(245, 13, 13)";
+    timerName.style.color = "rgb(221, 35, 35)";
     startBtnPushed = false;
 }
 
@@ -31,6 +36,10 @@ timerMinus.addEventListener("click", function() {
     let splited, splitNumber, subtracted, subtractedString;
     splited = time.split(":");
     splitNumber = Number(splited[0]);
+    if (timerName.innerText === "Timer" && timerLength.innerText !== "01:00") {
+        clearInterval(timer);
+        startBtnPushed = false;
+    }
     if (splitNumber > 1) {
         String(splitNumber);
         subtracted = --splitNumber;
@@ -39,17 +48,15 @@ timerMinus.addEventListener("click", function() {
             timerLength.innerText = `0${subtractedString}:${splited[1]}`;
             if (timerName.innerText === "Timer") {
                 timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+                titleBar.innerText = "Pomodoro Timer";
             }
         } else {
             timerLength.innerText = `${subtractedString}:${splited[1]}`;
             if (timerName.innerText === "Timer") {
                 timerTime.innerText = `${subtractedString}:${splited[1]}`;
+                titleBar.innerText = "Pomodoro Timer";
             }
         }
-    }
-    if (timerName.innerText === "Timer") {
-        clearInterval(timer);
-        startBtnPushed = false;
     }
 })
 
@@ -61,20 +68,22 @@ timerPlus.addEventListener("click", function() {
     splitNumber = Number(splited[0]);
     subtracted = ++splitNumber;
     subtractedString = String(subtracted);
+    if (timerName.innerText === "Timer") {
+        clearInterval(timer);
+        startBtnPushed = false;
+    }
     if (subtractedString.length === 1) {
         timerLength.innerText = `0${subtractedString}:${splited[1]}`;
         if (timerName.innerText === "Timer") {
             timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+            titleBar.innerText = "Pomodoro Timer";
         }
     } else {
         timerLength.innerText = `${subtractedString}:${splited[1]}`;
         if (timerName.innerText === "Timer") {
             timerTime.innerText = `${subtractedString}:${splited[1]}`;
+            titleBar.innerText = "Pomodoro Timer";
         }
-    }
-    if (timerName.innerText === "Timer") {
-        clearInterval(timer);
-        startBtnPushed = false;
     }
 });
 
@@ -84,6 +93,10 @@ breakMinus.addEventListener("click", function() {
     let splited, splitNumber, subtracted, subtractedString;
     splited = time.split(":");
     splitNumber = Number(splited[0]);
+    if (timerName.innerText === "Break!" && breakLength.innerText !== "01:00") {
+        clearInterval(timer);
+        startBtnPushed = false;
+    }
     if (splitNumber > 1) {
         String(splitNumber);
         subtracted = --splitNumber;
@@ -92,17 +105,15 @@ breakMinus.addEventListener("click", function() {
             breakLength.innerText = `0${subtractedString}:${splited[1]}`;
             if (timerName.innerText === "Break!") {
                 timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+                titleBar.innerText = "Pomodoro Timer";
             }
         } else {
             breakLength.innerText = `${subtractedString}:${splited[1]}`;
             if (timerName.innerText === "Break!") {
                 timerTime.innerText = `${subtractedString}:${splited[1]}`;
+                titleBar.innerText = "Pomodoro Timer";
             }
         }
-    }
-    if (timerName.innerText === "Break!") {
-        clearInterval(timer);
-        startBtnPushed = false;
     }
 })
 
@@ -114,20 +125,22 @@ breakPlus.addEventListener("click", function() {
     splitNumber = Number(splited[0]);
     subtracted = ++splitNumber;
     subtractedString = String(subtracted);
+    if (timerName.innerText === "Break!") {
+        clearInterval(timer);
+        startBtnPushed = false;
+    }
     if (subtractedString.length === 1) {
         breakLength.innerText = `0${subtractedString}:${splited[1]}`;
         if (timerName.innerText === "Break!") {
             timerTime.innerText = `0${subtractedString}:${splited[1]}`;
+            titleBar.innerText = "Pomodoro Timer";
         }
     } else {
         breakLength.innerText = `${subtractedString}:${splited[1]}`;
         if (timerName.innerText === "Break!") {
             timerTime.innerText = `${subtractedString}:${splited[1]}`;
+            titleBar.innerText = "Pomodoro Timer";
         }
-    }
-    if (timerName.innerText === "Break!") {
-        clearInterval(timer);
-        startBtnPushed = false;
     }
 });
 
@@ -159,8 +172,16 @@ startBtn.addEventListener("click", function() {
                 breakTime();
             } 
             if (timerTime.innerText === "00:00" && timerName.innerText === "Break!") {
+                audio.currentTime = 0;
                 timerName.innerText = "Timer";
+                timerBorder.style.borderColor = "rgb(245, 13, 13)";
+                timerName.style.color = "rgb(221, 35, 35)";
                 timerTime.innerText = timerLength.innerText;
+            }
+            if (timerName.innerText === "Timer") {
+                titleBar.innerHTML = `Timer ${timerTime.innerText}`;
+            } else if (timerName.innerText === "Break!") {
+                titleBar.innerHTML = `Break! ${timerTime.innerText}`;
             }
         } , 1000);
     }
@@ -168,6 +189,8 @@ startBtn.addEventListener("click", function() {
 
 function breakTime() {
     timerName.innerText = "Break!";
+    timerBorder.style.borderColor = "rgb(4, 196, 4)";
+    timerName.style.color = "rgb(4, 196, 4)";
     timerTime.innerText = breakLength.innerText;
 }
 
@@ -175,6 +198,7 @@ function breakTime() {
 stopBtn.addEventListener("click", function() {
     startBtnPushed = false;
     clearInterval(timer);
+    titleBar.innerText = "Pomodoro Timer";
 });
 
 //Reset button
@@ -188,4 +212,7 @@ resetBtn.addEventListener("click", function() {
         clearInterval(timer);
         startBtnPushed = false;
     }
+    titleBar.innerText = "Pomodoro Timer";
 });
+
+
